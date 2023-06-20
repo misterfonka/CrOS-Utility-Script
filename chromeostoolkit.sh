@@ -141,12 +141,13 @@ get_swap_usage() {
 }
 FWWPStatus() {
     fwwp_status=$(crossystem wpsw_cur)
-    if [[ $fwwp_status == "wpsw_cur: 0" ]]; then
+    if [[ $fwwp_status == "0" ]]; then
         echo "Disabled"
     else
         echo "Enabled"
     fi
 }
+
 
 clear
 echo -e "\e[1mWelcome to my menu!\e[0m"
