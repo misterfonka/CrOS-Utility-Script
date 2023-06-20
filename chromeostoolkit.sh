@@ -141,10 +141,11 @@ get_swap_usage() {
 }
 FWWPStatus() {
     fwwp_status=$(crossystem wpsw_cur)
-    if [[ $wp_status = "0" ]]; then
+    if [[ $fwwp_status == "wpsw_cur: 0" ]]; then
         echo "Disabled"
     else
         echo "Enabled"
+    fi
 }
 
 clear
