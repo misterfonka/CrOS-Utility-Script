@@ -275,6 +275,7 @@ elif [[ "$user_choice" = "5" ]]; then
 
 elif [[ "$user_choice" = "6" ]]; then
    curl -LOk mrchromebox.tech/firmware-util.sh
+   clear
    sudo bash firmware-util.sh
 else
     echo "ERROR: Invalid option"
