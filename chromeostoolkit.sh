@@ -151,7 +151,7 @@ FWWPStatus() {
 
 clear
 echo -e "\e[1mWelcome to my menu!\e[0m"
-echo    "FW WP: $(FWWPStatus)"
+echo "FW WP: $(FWWPStatus)"
 echo -e "\e[1m*************************************\e[0m"
 echo    "1) Disable autoupdates"
 echo    "2) Remove rootfs verification"
