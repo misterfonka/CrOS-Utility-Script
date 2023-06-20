@@ -3,6 +3,9 @@
 # Author: misterfonka
 # Purpose: Toolkit for ChromeOS that comes with cool stuff kind of just something random I wanted to make lol. I will be adding more.
 
+HWID=$(crossystem hwid | sed 's/X86//g' | sed 's/ *$//g' | sed 's/ /_/g')
+BOARD=$(crossystem hwid | sed 's/X86//g' | sed 's/ *$//g'| awk 'NR==1{print $1}' | cut -f 1 -d'-')
+
 # Functions
 
 CheckEnrollmentRO() {
@@ -147,16 +150,8 @@ FWWPStatus() {
         echo "Enabled"
     fi
 }
-GetHWID() {
-    hwid=$(crossystem hwid | sed 's/X86//g' | sed 's/ *$//g' | sed 's/ /_/g')
-    echo "$hwid"
-}
-GetBoardName() {
-    boardname=$(crossystem hwid | sed 's/X86//g' | sed 's/ *$//g'| awk 'NR==1{print $1}' | cut -f 1 -d'-')
-    echo "$boardname"
-}
 
-case "${hwid}" in
+case "${HWID}" in
 	AKALI*)                 _x='KBL|Acer Chromebook 13 / Spin 13' ; device="nami";;
 	AKEMI*)                 _x='CML|Lenovo Ideapad Flex 5 Chromebook' ;;
 	ALEENA*)                _x='STR|Acer Chromebook 315' ;;
@@ -462,8 +457,9 @@ esac
 clear
 echo -e "\e[1mWelcome to my menu!\e[0m"
 echo "FW WP: $(FWWPStatus)"
-echo "HWID: $(GetHWID)"
-echo "Board Name: $(GetBoardName)"
+echo "HWID: $HWID"
+echo "Board Name: $BOARD"
+echo "Model Name: $_x"
 echo -e "\e[1m*************************************\e[0m"
 echo    "1) Disable autoupdates"
 echo    "2) Remove rootfs verification"
