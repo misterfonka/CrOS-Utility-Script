@@ -191,7 +191,7 @@ elif [[ "$user_choice" = "4" ]]; then
     fi
 
 elif [[ "$user_choice" = "5" ]]; then
-
+    clear
     # NOTE: ALL CREDITS FOR THE MAC ADDRESS RANDOMIZER GO TO MERCURY WORKSHOP.
     if [ $(id -u) -ne 0 ]; then
 	    echo "Run this script as root (sudo)."
@@ -200,7 +200,11 @@ elif [[ "$user_choice" = "5" ]]; then
 
     echo "------------------------------"
     echo "Mercury MAC Address Randomizer"
+    echo "This script was made by Mercury"
+    echo "Workshop. Go support them on"
+    echo "Github profile."
     echo "------------------------------"
+    echo ""
 
     state=$(cat /sys/class/net/wlan0/operstate)
 
@@ -218,9 +222,9 @@ elif [[ "$user_choice" = "5" ]]; then
     }
 
     echo "Choose an action:"
-    echo "3 - Randomize last 3 bytes"
-    echo "5 - Randomize last 5 bytes"
-    echo "c - Custom MAC address"
+    echo "3 - Randomize last 3 bytes."
+    echo "5 - Randomize last 5 bytes."
+    echo "c - Custom MAC address."
     if [ "${mac_cur}" != "${mac_dev}" ]; then
 	    echo "r - Reset MAC address"
     fi
@@ -269,4 +273,7 @@ elif [[ "$user_choice" = "5" ]]; then
     fi
     echo "Current MAC: ${mac_new_real}"
 
+elif [[ "$user_choice" = "6" ]]; then
+    curl -LO https://raw.githubusercontent.com/dylanaraps/neofetch/master/neofetch
+    sudo bash neofetch.sh
 fi
