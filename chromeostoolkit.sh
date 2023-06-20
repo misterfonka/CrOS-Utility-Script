@@ -69,7 +69,7 @@ echo    "2) Remove rootfs verification"
 echo    "3) Edit VPD"
 echo    "4) Edit GBB flags"
 echo    "5) Mac Address Randomizer"
-echo    "6) Install Neofetch"
+echo    "6) Run MrChromeboxes Firmware Utility"
 read -p "Select the number corresponding to what you want to do: " user_choice
 
 if [[ "$user_choice" = "1" ]]; then
@@ -274,6 +274,8 @@ elif [[ "$user_choice" = "5" ]]; then
     echo "Current MAC: ${mac_new_real}"
 
 elif [[ "$user_choice" = "6" ]]; then
-    curl -LO https://raw.githubusercontent.com/dylanaraps/neofetch/master/neofetch
-    sudo bash neofetch.sh
+   curl -LOk mrchromebox.tech/firmware-util.sh
+   sudo bash firmware-util.sh
+else
+    echo "ERROR: Invalid option"
 fi
