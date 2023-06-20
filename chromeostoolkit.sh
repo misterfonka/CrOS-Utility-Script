@@ -400,17 +400,8 @@ elif [[ "$user_choice" = "8" ]]; then
     get_memory_usage
     get_disk_space
 
-    print_header "Network"
-    get_network_statistics
-
     print_header "System Load"
     get_load_average
-
-    print_header "CPU Temperature"
-    get_cpu_temperature
-
-    print_header "Logged-in Users"
-    get_logged_in_users
 
     print_header "Process Count"
     get_process_count
