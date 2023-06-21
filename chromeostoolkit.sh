@@ -476,8 +476,6 @@ case "${HWID}" in
 	ZAVALA*)                _x='Acer Chromebook Vero 712'; device="zavala" ;;
 	*)                      _x='ERROR: unknown or unidentifiable device' ;; 
 esac
-# echo "$(echo_blue "**") $(echo_yellow "1)") Disable Autoupdate"
-clear
 echo_red "ChromeOS Utility Script"
 echo "misterfonka <misterfonka@gmail.com>"
 echo_blue "*************************************"
