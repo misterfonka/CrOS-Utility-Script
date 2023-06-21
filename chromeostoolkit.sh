@@ -476,6 +476,7 @@ case "${HWID}" in
 	ZAVALA*)                _x='Acer Chromebook Vero 712'; device="zavala" ;;
 	*)                      _x='ERROR: unknown or unidentifiable device' ;; 
 esac
+clear
 echo_red "ChromeOS Utility Script"
 echo "misterfonka <misterfonka@gmail.com>"
 echo_blue "*************************************"
@@ -484,7 +485,6 @@ echo "$(echo_blue "**") $(echo "FW Ver: $FWVERSION")"
 echo "$(echo_blue "**") $(echo "Device Model: $_x")"
 echo "$(echo_blue "**") $(echo "HWID: $HWID")"
 echo "$(echo_blue "**") $(echo "Board Name: $BOARD")"
-echo "$(echo_blue "**") $(echo "GBB Flags value: $gbb_view")"
 echo_blue "*************************************"
 echo "$(echo_blue "** [WP]") $(echo_yellow " 1)") Disable Autoupdates"
 echo "$(echo_blue "** [WP]") $(echo_yellow " 2)") Disable RootFS verification"
