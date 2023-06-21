@@ -83,6 +83,8 @@ ViewGBB() {
 	view_gbb=$(gbb_utility --get --flags bios.bin | grep -w "flags:" | tr -d "flags :")
 	rm bios.bin
 }
+echo "Getting device/system info..."
+ViewGBB
 BIOSDump () {
     # Creates bios.bin file in current directory
     flashrom -r bios.bin &> /dev/null
@@ -494,6 +496,8 @@ echo "$(echo_blue "**") $(echo_yellow "      5)") Mac Address Randomizer"
 echo "$(echo_blue "** [WP?]") $(echo_yellow "6)") Run MrChromeboxes Firmware Utility"
 echo "$(echo_blue "**") $(echo_yellow "      7)") Dump BIOS/Firmware"
 echo "$(echo_blue "**") $(echo_yellow "      8)") System Info"
+echo "$(echo_blue "**") $(echo_yellow "      R)") Reboot"
+echo "$(echo_blue "**") $(echo_yellow "      Q)") Quit"
 read -p "Select the number corresponding to what you want to do: " user_choice
 
 if [[ "$user_choice" = "1" ]]; then
@@ -749,6 +753,13 @@ elif [[ "$user_choice" = "8" ]]; then
 
     # Press anykey to continue
     read -p "Press anykey to continue: "
+
+elif [[ "$user_choice" =~ [Rr] ]]; then
+	reboot
+
+elif [[ "$user_choice" =~ [Qq] ]]; then
+	exit 0
+
 else
     echo "ERROR: INVALID OPTION"
 fi
