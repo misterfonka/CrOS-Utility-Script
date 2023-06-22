@@ -485,17 +485,20 @@ echo "$(echo_blue "**") $(echo "FW Ver: $FWVERSION")"
 echo "$(echo_blue "**") $(echo "Device Model: $_x")"
 echo "$(echo_blue "**") $(echo "HWID: $HWID")"
 echo "$(echo_blue "**") $(echo "Board Name: $BOARD")"
+echo "$(echo_blue "**") $(echo "GBB Flags value: $view_gbb")"
 echo_blue "*************************************"
-echo "$(echo_blue "** [WP]") $(echo_yellow " 1)") Disable Autoupdates"
-echo "$(echo_blue "** [WP]") $(echo_yellow " 2)") Disable RootFS verification"
-echo "$(echo_blue "**") $(echo_yellow "      3)") Edit VPD"
-echo "$(echo_blue "** [WP]" ) $(echo_yellow " 4)") Edit GBB flags"
-echo "$(echo_blue "**") $(echo_yellow "      5)") Mac Address Randomizer"
-echo "$(echo_blue "** [WP?]") $(echo_yellow "6)") Run MrChromeboxes Firmware Utility"
-echo "$(echo_blue "**") $(echo_yellow "      7)") Dump BIOS/Firmware"
-echo "$(echo_blue "**") $(echo_yellow "      8)") System Info"
-echo "$(echo_blue "**") $(echo_yellow "      R)") Reboot"
-echo "$(echo_blue "**") $(echo_yellow "      Q)") Quit"
+echo "$(echo_blue "** [WP]") $(echo_yellow " 1)")  Disable Autoupdates"
+echo "$(echo_blue "** [WP]") $(echo_yellow " 2)")  Disable RootFS verification"
+echo "$(echo_blue "**") $(echo_yellow "      3)")  Edit VPD"
+echo "$(echo_blue "** [WP]" ) $(echo_yellow " 4)")  Edit GBB flags"
+echo "$(echo_blue "**") $(echo_yellow "      5)")  Mac Address Randomizer"
+echo "$(echo_blue "** [WP?]") $(echo_yellow "6)")  Run MrChromeboxes Firmware Utility"
+echo "$(echo_blue "**") $(echo_yellow "      7)")  Dump BIOS/Firmware"
+echo "$(echo_blue "**") $(echo_yellow "      8)")  System Info"
+echo "$(echo_blue "**") $(echo_yellow "      9)")  FREDestroyer"
+echo "$(echo_blue "**") $(echo_yellow "      10)") Unblock Devmode"
+echo "$(echo_blue "**") $(echo_yellow "      R)")  Reboot"
+echo "$(echo_blue "**") $(echo_yellow "      Q)")  Quit"
 read -p "Select the number corresponding to what you want to do: " user_choice
 
 if [[ "$user_choice" = "1" ]]; then
@@ -758,6 +761,54 @@ elif [[ "$user_choice" =~ [Rr] ]]; then
 elif [[ "$user_choice" =~ [Qq] ]]; then
 	exit 0
 
-else
-    echo "ERROR: INVALID OPTION"
+elif [[ "$user_choice" = "9" ]]; then
+	clear
+	echo_red "ARE YOU SURE YOU WANT TO DO THIS?"
+	echo "THIS WILL BREAK FORCE RE-ENROLLMENT"
+	echo "MEANING YOU CAN NEVER RE-ENROLL EVER AGAIN."
+	echo "BY TYPING DoIt, YOU ACKNOWLEDGE THAT THE CREATOR"
+	echo "IS NOT RESPONSIBLE FOR ANY DAMAGE/HARM THAT COMES"
+	echo "FROM THIS SCRIPT."
+	read -p "Type DoIt to accept and continue: " doit
+
+	if [[ "$doit" = "DoIt" ]]; then
+		clear
+		echo_red "Breaking force re-enrollment..."
+		vpd -i "RW_VPD" -s "check_enrollment"="0" &> /dev/null
+  		vpd -i "RW_VPD" -s "block_devmode"="0" &> /dev/null
+  		vpd -d "stable_device_secret_DO_NOT_SHARE" &> /dev/null
+  		dump_vpd_log --force &> /dev/null
+  		crossystem clear_tpm_owner_request=1
+		clear
+		echo "Done!"
+		sleep 3
+		clear
+		echo "Rebooting. Please wait."
+		sleep 5
+		reboot
+	else
+		echo "Exiting..."
+		exit 0
+	fi
+
+elif [[ "$user_choice" = "10" ]]; then
+	clear
+	echo "Are you sure you want to do this?"
+	read -p "Type DoIt to confirm: " doit
+
+	if [[ "$doit" = "DoIt" ]]; then
+		clear
+		echo "Unblocking developer mode..."
+		vpd -i RW_VPD -s block_devmode=0
+		crossystem block_devmode=0
+  		flashrom -r bios.bin &> /dev/null
+  		gbb_utility --set --flags=$set_gbbchoice bios.bin &> /dev/null
+  		flashrom -i GBB -w bios.bin &> /dev/null
+  		rm bios.bin
+		clear
+		echo "Success!"
+	else
+		echo "Exiting..."
+		exit 0
+	fi
 fi
