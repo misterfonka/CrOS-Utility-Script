@@ -172,7 +172,69 @@ FWWPStatus() {
         echo "Enabled"
     fi
 }
+edit_crossystem() {
+			clear
+      # no here-strings because of posix sh. sed instead of {//} because posix sh
+      
+      crossystem_rw=$(asusb crossystem | grep "RW")
+      data="$(while read line; do
+        stripped=$(echo "$line" | sed "s/#.*//g" | sed "s/ //g")
 
+        key=$(echo "$stripped" | sed "s/=.*//g")
+        val=$(echo "$stripped" | sed "s/.*=//g")
+
+
+        echo -n "$key\x20(current=$val) "
+      done <<EOF
+$crossystem_rw
+EOF
+)"
+
+        read -p "What do you want to edit?" $data
+
+        line=$(echo "$crossystem_rw" | sed "${CHOICE}q;d")
+        stripped=$(echo "$line" | sed "s/#.*//g" | sed "s/ //g")
+        key=$(echo "$stripped" | sed "s/=.*//g")
+        val=$(echo "$stripped" | sed "s/.*=//g")
+
+
+
+        clear
+        asusb stty echo
+        pick_input "What do you want to change $key to? (current value: $val)          >"
+        clear
+        if crossystem "$key=$CHOICE"; then
+          echo "Set $key to $CHOICE sucessfully"
+        else
+          echo "Failed to set $key to $CHOICE"
+        fi
+}
+reset_system() {
+  clear
+  echo "How would you like to reset system data?"
+  echo  "1) Powerwash (remove user accounts only)"
+  echo  "2) Pressurewash (remove all data)"
+  echo  "3) Secure Wipe (slow, completely unrecoverable)"
+  read -p "Enter the corresponding number you want to do: " CHOICE
+  case $CHOICE in
+  1)
+    mkdir /stateful || :
+    mount "$STATEDEV" /stateful
+    echo "fast safe" >/stateful/factory_install_reset
+    umount /stateful
+    sync
+    ;;
+  2)
+    yes | asusb mkfs.ext4 $STATEDEV
+    ;;
+  3)
+    echo "Starting Secure Wipe..."
+    echo -en "\n\n\n"
+    dd if=/dev/zero | (asusb /usr/sbin/pv) | dd of="$STATEDEV" 
+    echo "Secure Wipe complete"
+    ;;
+  esac
+}
 # Note: this case statement was taken from MrChromeboxes source code.
 case "${HWID}" in
 	AKALI*)                 _x='Acer Chromebook 13 / Spin 13' ; device="nami";;
@@ -488,15 +550,18 @@ echo "$(echo_blue "**") $(echo "Board Name: $BOARD")"
 echo "$(echo_blue "**") $(echo "GBB Flags value: $view_gbb")"
 echo_blue "*************************************"
 echo "$(echo_blue "** [WP]") $(echo_yellow " 1)")  Disable Autoupdates"
-echo "$(echo_blue "** [WP]") $(echo_yellow " 2)")  Disable RootFS verification"
-echo "$(echo_blue "**") $(echo_yellow "      3)")  Edit VPD"
-echo "$(echo_blue "** [WP]" ) $(echo_yellow " 4)")  Edit GBB flags"
-echo "$(echo_blue "**") $(echo_yellow "      5)")  Mac Address Randomizer"
-echo "$(echo_blue "** [WP?]") $(echo_yellow "6)")  Run MrChromeboxes Firmware Utility"
-echo "$(echo_blue "**") $(echo_yellow "      7)")  Dump BIOS/Firmware"
-echo "$(echo_blue "**") $(echo_yellow "      8)")  System Info"
-echo "$(echo_blue "**") $(echo_yellow "      9)")  FREDestroyer"
-echo "$(echo_blue "**") $(echo_yellow "      10)") Unblock Devmode"
+echo "$(echo_blue "** [WP]") $(echo_yellow " 2)")  Re-Enable Autoupdates"
+echo "$(echo_blue "** [WP]") $(echo_yellow " 3)")  Disable RootFS verification"
+echo "$(echo_blue "**") $(echo_yellow "      4)")  Edit VPD"
+echo "$(echo_blue "** [WP]" ) $(echo_yellow " 5)")  Edit GBB flags"
+echo "$(echo_blue "**") $(echo_yellow "      6)")  Mac Address Randomizer"
+echo "$(echo_blue "** [WP?]") $(echo_yellow "7)")  Run MrChromeboxes Firmware Utility"
+echo "$(echo_blue "**") $(echo_yellow "      8)")  Dump BIOS/Firmware"
+echo "$(echo_blue "**") $(echo_yellow "      9)")  System Info"
+echo "$(echo_blue "**") $(echo_yellow "      10)") FREDestroyer"
+echo "$(echo_blue "**") $(echo_yellow "      11)") Unblock Devmode"
+echo "$(echo_blue "**") $(echo_yellow "      12)") Edit Crossystem"
+echo "$(echo_blue "**") $(echo_yellow "      13)") Reset System"
 echo "$(echo_blue "**") $(echo_yellow "      R)")  Reboot"
 echo "$(echo_blue "**") $(echo_yellow "      Q)")  Quit"
 read -p "Select the number corresponding to what you want to do: " user_choice
@@ -506,7 +571,8 @@ if [[ "$user_choice" = "1" ]]; then
     echo "WARNING!"
     echo "YOU WILL NEED TO DISABLE ROOTFS VERIFICATION TO DO THIS."
     echo "ALSO, IF YOU DO THIS YOU WILL BE STUCK AT THE CHECKING FOR UPDATES SCREEN"
-    echo "IF YOU POWERWASH. TO FIX THIS, RECOVER."
+    echo "IF YOU POWERWASH. TO FIX THIS, RECOVER. IF YOU WANT TO RE-ENABLE"
+	echo "AUTOUPDATES, USE OPTION 2."
     echo ""
     read -p "Type DoIt to continue: " doit
 
@@ -514,7 +580,8 @@ if [[ "$user_choice" = "1" ]]; then
     clear
     if [[ "$doit" = "DoIt" ]]; then
     echo "Removing autoupdates..."
-    mv /sbin/update_engine /sbin/update_engine.bak
+    mv /usr/sbin/update_engine /usr/sbin/update_enginefake
+	mv /usr/sbin/update_engine_client /usr/sbin/update_engine_clientfake
     echo "Succesfully removed autoupdates!"
 
 else
@@ -522,7 +589,7 @@ else
     echo "User didn't want to do it... :("
 fi
 
-elif [[ "$user_choice" = "2" ]]; then
+elif [[ "$user_choice" = "3" ]]; then
     clear
     echo "TO RESET THE ROOTFS VERIFICATION BACK TO NORMAL, RECOVER."
     read -p "Type DoIt to continue: " doit
@@ -531,7 +598,7 @@ elif [[ "$user_choice" = "2" ]]; then
     clear
     if [[ "$doit" = "DoIt" ]]; then
         echo "Removing RootFS verification..."
-        /usr/share/vboot/bin/make_dev_ssd.sh --remove_rootfs_verification
+        /usr/share/vboot/bin/make_dev_ssd.sh --remove_rootfs_verification --partitions 2
         echo "Succesfully removed RootFS verification!"
         echo "Rebooting..."
         reboot
@@ -540,7 +607,7 @@ elif [[ "$user_choice" = "2" ]]; then
         echo "User didn't want to do it... :("
     fi
 
-elif [[ "$user_choice" = "3" ]]; then
+elif [[ "$user_choice" = "4" ]]; then
 clear
     echo "Choose a VPD partition to edit:"
     echo "1) Read-Writable (RW_VPD)"
@@ -602,7 +669,7 @@ clear
                     "ubind_attribute") UBindAttribute ;;
                     esac
                     
-elif [[ "$user_choice" = "4" ]]; then
+elif [[ "$user_choice" = "5" ]]; then
     clear
     read -p "What do you want to set the GBB flags to? " set_gbbchoice
     clear
@@ -620,7 +687,7 @@ elif [[ "$user_choice" = "4" ]]; then
         echo "User didn't want to do it..."
     fi
 
-elif [[ "$user_choice" = "5" ]]; then
+elif [[ "$user_choice" = "6" ]]; then
     clear
     # NOTE: ALL CREDITS FOR THE MAC ADDRESS RANDOMIZER GO TO MERCURY WORKSHOP.
     if [ $(id -u) -ne 0 ]; then
@@ -703,12 +770,12 @@ elif [[ "$user_choice" = "5" ]]; then
     fi
     echo "Current MAC: ${mac_new_real}"
 
-elif [[ "$user_choice" = "6" ]]; then
+elif [[ "$user_choice" = "7" ]]; then
    curl -LOk mrchromebox.tech/firmware-util.sh
    clear
    sudo bash firmware-util.sh
 
-elif [[ "$user_choice" = "7" ]]; then
+elif [[ "$user_choice" = "8" ]]; then
     clear
     echo "Are you sure you want to dump the current system BIOS/Firmware?"
     echo "Nothing bad can come from this, it will just make the bios.bin file"
@@ -726,7 +793,7 @@ elif [[ "$user_choice" = "7" ]]; then
         echo "User didn't want to do it..."
     fi
 
-elif [[ "$user_choice" = "8" ]]; then
+elif [[ "$user_choice" = "9" ]]; then
     # Customize the script's output appearance
     clear
     echo -e "\e[1mSystem Information\e[0m"
@@ -761,7 +828,7 @@ elif [[ "$user_choice" =~ [Rr] ]]; then
 elif [[ "$user_choice" =~ [Qq] ]]; then
 	exit 0
 
-elif [[ "$user_choice" = "9" ]]; then
+elif [[ "$user_choice" = "10" ]]; then
 	clear
 	echo_red "ARE YOU SURE YOU WANT TO DO THIS?"
 	echo "THIS WILL BREAK FORCE RE-ENROLLMENT"
@@ -791,7 +858,7 @@ elif [[ "$user_choice" = "9" ]]; then
 		exit 0
 	fi
 
-elif [[ "$user_choice" = "10" ]]; then
+elif [[ "$user_choice" = "11" ]]; then
 	clear
 	echo "Are you sure you want to do this?"
 	read -p "Type DoIt to confirm: " doit
@@ -811,4 +878,26 @@ elif [[ "$user_choice" = "10" ]]; then
 		echo "Exiting..."
 		exit 0
 	fi
+
+elif [[ "$user_choice" = "2" ]]; then
+	clear
+	echo "Are you sure you want to re-enable autoupdates?"
+	read -p "Type DoIt to confirm: " doit
+
+	if [[ "$doit" = "DoIt" ]]; then
+		clear
+		echo "Re-Enabling autoupdates..."
+		mv /usr/sbin/update_enginefake /usr/sbin/update_engine
+		mv /usr/sbin/update_engine_clientfake /usr/sbin/update_engine_client
+		echo "Complete!"
+
+	else
+		clear
+		echo "Exiting..."
+	fi
+
+elif [[ "$user_choice" = "12" ]]; then
+	edit_crossystem
+elif [[ "$user_choice" = "13" ]]; then
+	reset_system
 fi
