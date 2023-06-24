@@ -4,7 +4,7 @@
 # Purpose: crOS Utility Script filled with useful utilities for ChromeOS.
 
 # Sources the functions from the other file
-source functions.sh
+source ./functions.sh
 
 # Case statement to try and find the users model name
 # Note: this case statement was taken from MrChromeboxes source code.
