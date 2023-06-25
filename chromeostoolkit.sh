@@ -3,6 +3,12 @@
 # Author: misterfonka
 # Purpose: crOS Utility Script filled with useful utilities for ChromeOS.
 
+# Checks if script is ran as root.
+if [ "$(id -u)" != "0" ]; then
+    echo "This script must be run as root."
+    exit 1
+fi
+
 # Sources the functions from the other file
 source ./functions.sh
 
@@ -336,6 +342,7 @@ echo "$(echo_blue "**") $(echo_yellow "      11)") Mac Address Randomizer"
 echo "$(echo_blue "**") $(echo_yellow "      12)") Dump BIOS/Firmware"
 echo "$(echo_blue "**") $(echo_yellow "      R)")  Reboot"
 echo "$(echo_blue "**") $(echo_yellow "      Q)")  Quit"
+echo "$(echo_blue "**") $(echo_yellow "      C)")  Credits"
 read -p "Select the number corresponding to what you want to do: " user_choice
 
 # Do whatever number the user put in
@@ -383,4 +390,6 @@ elif [[ "$user_choice" =~ [Rr] ]]; then
 elif [[ "$user_choice" =~ [Qq] ]]; then
 	exit 0
 
+elif [[ "$user_choice" =~ [Cc] ]]; then
+	viewcredits
 fi
