@@ -69,6 +69,20 @@ ShouldSendRlzPing() {
 UBindAttribute() {
     vpd -i RW_VPD -s ubind_attribute="$RW_VPD_edited"
 }
+get_largest_nvme_namespace() {
+        local largest size tmp_size dev
+        size=0
+        dev=$(basename "$1")
+
+        for nvme in /sys/block/"${dev%n*}"*; do
+            tmp_size=$(cat "${nvme}"/size)
+            if [ "${tmp_size}" -gt "${size}" ]; then
+                largest="${nvme##*/}"
+                size="${tmp_size}"
+            fi
+        done
+        echo "${largest}"
+}
 SetGBB () {
   # Creates bios.bin file in current directory
   flashrom -r bios.bin &> /dev/null
@@ -172,30 +186,65 @@ FWWPStatus() {
     fi
 }
 reset_system() {
-  clear
-  echo "How would you like to reset system data?"
-  echo  "1) Powerwash (remove user accounts only)"
-  echo  "2) Pressurewash (remove all data)"
-  echo  "3) Secure Wipe (slow, completely unrecoverable)"
-  read -p "Enter the corresponding number you want to do: " CHOICE
-  case $CHOICE in
-  1)
-    mkdir /stateful || :
-    mount "$STATEDEV" /stateful
-    echo "fast safe" >/stateful/factory_install_reset
-    umount /stateful
-    sync
-    ;;
-  2)
-    yes | asusb mkfs.ext4 $STATEDEV
-    ;;
-  3)
-    echo "Starting Secure Wipe..."
-    echo -en "\n\n\n"
-    dd if=/dev/zero | (asusb /usr/sbin/pv) | dd of="$STATEDEV" 
-    echo "Secure Wipe complete"
-    ;;
-  esac
+    clear
+    echo "How would you like to reset system data?"
+    echo  "1) Powerwash (remove user accounts only)"
+    echo  "2) Pressurewash (remove all data)"
+    echo  "3) Secure Wipe (slow, completely unrecoverable)"
+    read -p "Enter the corresponding number you want to do: " CHOICE
+    case $CHOICE in
+    1)
+        clear
+        echo_red "Are you sure you want to do this?"
+        echo "This will:"
+        echo ""
+        echo "Remove all local data."
+        echo "Reset device to factory settings."
+        read -p "Type DoIt to confirm and continue: " doit
+
+        if [[ "$doit" = "DoIt" ]]; then
+            bash /mnt/stateful_partition/factory_install_reset
+            clear
+            echo "Done!"
+            echo "Upon rebooting, you will be met with a powerwashing screen."
+            echo "Do not turn off your device and wait around five minutes for it to finish."
+        else
+            echo "Exiting..."
+            exit 1
+        fi
+        ;;
+    2)
+        echo "Under maintenance."
+        ;;
+    3)
+        clear
+        echo_red "ARE YOU SURE YOU WANT TO DO THIS!!!"
+        echo "THIS IS EXTREMELY DANGEROUS, WIPING ALL OF"
+        echo "YOUR INTERNAL STORAGE, MEANING YOUR DEVICE WILL"
+        echo "NOT BE USABLE AFTER THIS."
+        read -p "TYPE DoIt TO ACKNOWLEDGE THE RISKS AND CONTINUE: " doit
+
+        if [[ "$doit" = "DoIt" ]]; then
+            . /usr/share/misc/chromeos-common.sh
+
+            DST=/dev/$(get_largest_nvme_namespace)
+            if [ -z $DST ]; then
+                DST=/dev/mmcblk0
+            fi
+
+            echo "Starting Secure Wipe..."
+            dd if=/dev/urandom of=${DST} >/dev/null &
+            echo "Secure Wipe complete."
+            echo "Rebooting..."
+            sleep 3
+            reboot
+        else
+            echo "Exiting..."
+            exit 1
+        fi
+        ;;
+    esac
+    exit 0
 }
 remove_rootfs_verification() {
 	 clear
@@ -514,4 +563,11 @@ reenableautoupdates() {
 		echo "Exiting..."
 		exit 0
 	fi
+}
+viewcredits() { 
+    clear
+    echo_red "Credits:"
+    echo "$(echo_blue "misterfonka") - Creating this script"
+    echo "$(echo_blue "MrChromebox") - Creating the Firmware Utility and providing some code"
+    echo "$(echo_blue "Mercury Workshop") - Creating the Mac Address Randomizer"
 }
