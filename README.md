@@ -2,7 +2,7 @@
 Script that is filled with useful utilities and debugging features for ChromeOS.
 
 # How to use:
-cd; sudo curl -LO https://raw.githubusercontent.com/misterfonka/crOS-Utility-Script/main/chromeostoolkit.sh && sudo bash chromeostoolkit.sh && sudo curl -LO https://raw.githubusercontent.com/misterfonka/crOS-Utility-Script/main/functions.sh && sudo bash chromeostoolkit.sh
+cd; sudo curl -LO https://raw.githubusercontent.com/misterfonka/crOS-Utility-Script/main/chromeostoolkit.sh && sudo curl -LO https://raw.githubusercontent.com/misterfonka/crOS-Utility-Script/main/functions.sh && sudo bash chromeostoolkit.sh
 
 You may need to disable rootfs verification to run this script, hopefully in the next release i'll try to fix that.
 
