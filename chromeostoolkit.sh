@@ -5,7 +5,7 @@
 
 # Checks if script is ran as root.
 if [ "$(id -u)" != "0" ]; then
-    echo "This script must be run as root."
+    echo "This script must be run as root/sudo."
     exit 1
 fi
 
@@ -23,7 +23,6 @@ echo_blue "*************************************"
 echo "$(echo_blue "**") $(echo "FW WP: $(FWWPStatus)")"
 echo "$(echo_blue "**") $(echo "FW Ver: $FWVERSION")"
 echo "$(echo_blue "**") $(echo "Device Model: $_x")"
-echo "$(echo_blue "**") $(echo "Device CPU Type: $deviceCpuType")"
 echo "$(echo_blue "**") $(echo "HWID: $HWID")"
 echo "$(echo_blue "**") $(echo "Board Name: $BOARD")"
 echo_blue "*************************************"
@@ -40,6 +39,7 @@ echo "$(echo_blue "** [WP?]") $(echo_yellow "10)") Run MrChromeboxes Firmware Ut
 echo "$(echo_blue "**") $(echo_yellow "      11)") Mac Address Randomizer"
 echo "$(echo_blue "**") $(echo_yellow "      12)") Dump BIOS/Firmware"
 echo "$(echo_blue "**") $(echo_yellow "      13)") View configuration"
+echo "$(echo_blue "** [WP]") $(echo_yellow " 14)") Set HWID"
 echo "$(echo_blue "**") $(echo_yellow "      R)")  Reboot"
 echo "$(echo_blue "**") $(echo_yellow "      Q)")  Quit"
 echo "$(echo_blue "**") $(echo_yellow "      C)")  Credits"
@@ -88,6 +88,9 @@ elif [[ "$user_choice" = "13" ]]; then
 	show_crossystem_values
 	show_rw_vpd_values
 	show_ro_vpd_values
+
+elif [[ "$user_choice" = "14" ]]; then
+	edit_hwid
 
 elif [[ "$user_choice" =~ [Rr] ]]; then
 	reboot
