@@ -940,7 +940,7 @@ viewcredits() {
 }
 show_crossystem_values() {
     clear
-    echo_red "crossystem values:
+    echo_red "crossystem values:"
     crossystem
     echo_blue "--------------------------------------"
 }
