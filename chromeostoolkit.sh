@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Author: misterfonka
-# Purpose: crOS Utility Script filled with useful utilities for ChromeOS.
+# Purpose: CrOS Utility Script filled with useful utilities for ChromeOS.
 
 # Checks if script is ran as root.
 if [ "$(id -u)" != "0" ]; then
@@ -9,12 +9,12 @@ if [ "$(id -u)" != "0" ]; then
     exit 1
 fi
 
-# Downloads files for the script to work and then sources them.
+# Downloads files for the script to work and then sources them
 echo "Downloading supporting files..."
 curl -LO https://raw.githubusercontent.com/misterfonka/crOS-Utility-Script/main/functions.sh >/dev/null 2>&1
 source ./functions.sh
 
-# Clear out the previous terminal output and display the menu
+# Clear out the previous terminal output and displays the menu
 clear
 echo_red "CrOS Utility Script"
 echo ""
@@ -23,6 +23,7 @@ echo_blue "*************************************"
 echo "$(echo_blue "**") $(echo "FW WP: $(FWWPStatus)")"
 echo "$(echo_blue "**") $(echo "FW Ver: $FWVERSION")"
 echo "$(echo_blue "**") $(echo "Device Model: $_x")"
+echo "$(echo_blue "**") $(echo "Device CPU Type: $deviceCpuType")"
 echo "$(echo_blue "**") $(echo "HWID: $HWID")"
 echo "$(echo_blue "**") $(echo "Board Name: $BOARD")"
 echo_blue "*************************************"
