@@ -338,8 +338,7 @@ FWVERSION=$(crossystem fwid)
 # Functions
 
 echo_red() {
-	echo -e "\E[0;31m$1"
-	echo -e '\e[0m'
+	echo -e "\E[0;31m$1\e[0m"
 }
 echo_green() {
 	echo -e "\E[0;32m$1\e[0m"
@@ -940,22 +939,20 @@ viewcredits() {
     echo "$(echo_blue "Mercury Workshop") - Creating the Mac Address Randomizer"
 }
 show_crossystem_values() {
-    echo_red "crossystem values:"
-    echo_blue "--------------------------------------"
-    crossystem -all
+    clear
+    echo_red "crossystem values:
+    crossystem
     echo_blue "--------------------------------------"
 }
 
 show_rw_vpd_values() {
     echo_red "RW_VPD values:"
-    echo_blue "--------------------------------------"
     vpd -i RW_VPD -l
     echo_blue "--------------------------------------"
 }
 
 show_ro_vpd_values() {
     echo_red "RO_VPD values:"
-    echo_blue "--------------------------------------"
     vpd -i RO_VPD -l
     echo_blue "--------------------------------------"
 }
