@@ -3,7 +3,7 @@
 # Author: misterfonka
 # Purpose: Functions for the main Utility Script.
 
-case "${_hwid}" in
+case "${HWID}" in
 	AKALI*)                 _x='KBL|Acer Chromebook 13 / Spin 13' ; device="nami";;
 	AKEMI*)                 _x='CML|Lenovo Ideapad Flex 5 Chromebook' ;;
 	ALEENA*)                _x='STR|Acer Chromebook 315' ;;
