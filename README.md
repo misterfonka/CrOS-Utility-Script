@@ -1,5 +1,5 @@
-# crOS Utility Script
-Script that is filled with useful utilities and debugging features for ChromeOS.
+# CrOS Utility Script
+Script with useful debugging tools and other utilities for chromeOS
 
 # How to use:
 cd; sudo curl -LO https://raw.githubusercontent.com/misterfonka/crOS-Utility-Script/main/chromeostoolkit.sh && sudo bash chromeostoolkit.sh
