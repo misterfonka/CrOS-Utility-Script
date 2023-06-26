@@ -1,11 +1,17 @@
 #!/bin/bash
-
-# Author: misterfonka
-# Purpose: CrOS Utility Script filled with useful utilities for ChromeOS.
+#
+# This script offers useful debugging tools and
+# information for Chromebooks.
+#
+# Created by misterfonka <misterfonka@gmail.com>
+# Project link: https://github.com/misterfonka/CrOS-Utility-Script
+#
+# May be freely distributed and modified as needed
+# as long as lines six and seven are kept in.
 
 # Checks if script is ran as root.
 if [ "$(id -u)" != "0" ]; then
-    echo "This script must be run as root."
+    echo "This script must be run as root/sudo."
     exit 1
 fi
 
