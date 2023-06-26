@@ -20,6 +20,7 @@ the dangers of doing this yourself, but heres how to do it:
 sudo /usr/share/vboot/bin/make_dev_ssd.sh --remove_rootfs_verification
 ```
 
+If it asks you to add something to the command like "partitions 2", do it.
 ## Prerequisites:
 You must have Flashrom installed for some utilities (Flashrom is on chromebooks by default, don't worry unless you haven't deleted it) <br>
 Your Chromebook must be in developer mode or have some kind of shell that is connected to WiFi.
