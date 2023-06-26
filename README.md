@@ -26,7 +26,9 @@ You must have Flashrom installed for some utilities (Flashrom is on chromebooks 
 Your Chromebook must be in developer mode or have some kind of shell that is connected to WiFi.
 Some utilities require hardware write protection to be disabled, you can do that by disconnecting the battery and then plugging in a charger. <br>
 Note: some models of Chromebooks have different WP methods, to see yours, examine this website. <br>
-https://mrchromebox.tech/#devices <br>
+https://mrchromebox.tech/#devices <br><br>
+
+Use this script at your own risk, misterfonka is not responsible for any damages caused by this script.
 
 # Credits
 misterfonka - Creating this script <br>
